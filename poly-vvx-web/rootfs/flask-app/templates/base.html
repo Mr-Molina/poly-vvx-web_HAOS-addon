@@ -1,26 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Assistant Dashboard</title>
     <style>
-        body,html{
-            background-color: black;
-            color: white;
-        }
+      body,
+      html {
+        background-color: black;
+        color: white;
+      }
     </style>
-</head>
-<body>
-    <table>
-        <tbody id="statsTable">
+  </head>
+  <body>
+    <table aria-label="Home Assistant Sensors">
+      <tbody id="statsTable" aria-live="polite">
         <tr>
-        <td>Sensor</td>
-        <td>42</td>
+          <td colspan="2">Loading sensors...</td>
         </tr>
-        </tbody>
+      </tbody>
     </table>
-</body>
-<script type="text/javascript">
+  </body>
+  <script type="text/javascript">
     statsUpdate();
     setInterval(statsUpdate, 30 * 1000);
 
@@ -44,19 +45,21 @@
             var oldTbody = document.getElementById("statsTable");
             oldTbody.parentNode.replaceChild(tbody, oldTbody);
         });
+        document.getElementById("statsTable").innerHTML = content;
+      });
     }
 
     // Ajax call to get json data from flask api endpoint
     function getData(callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var data = JSON.parse(xhr.responseText);
-                callback(data);
-            }
-        };
-        xhr.open('GET', '/api', true);
-        xhr.send();
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var data = JSON.parse(xhr.responseText);
+          callback(data);
+        }
+      };
+      xhr.open("GET", "/api", true);
+      xhr.send();
     }
-</script>
+  </script>
 </html>
