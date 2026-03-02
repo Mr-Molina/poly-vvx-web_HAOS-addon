@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify
-from requests import get
+import requests
 import json
 import os
 
@@ -17,6 +17,10 @@ headers = {
     "content-type": "application/json",
 }
 
+# Create a session to reuse TCP connections across sequential API requests
+session = requests.Session()
+session.headers.update(headers)
+
 @app.route("/")
 def base():
     return render_template('base.html')
@@ -25,10 +29,11 @@ def base():
 def api():
     newDict = []
     for entity_id in app.config['SENSOR_ENTITY_IDS']:
-        response = get(url + entity_id, headers=headers)
+        # Use session to get connection pooling benefits
+        response = session.get(url + entity_id)
         try:
-            # load json response into dict
-            haapi = json.loads(response.text)
+            # load json response into dict using built-in requests json parser
+            haapi = response.json()
             friendly_name = haapi["attributes"]["friendly_name"]
             # use .get to set blank default unit of measurement
             unit_of_measurement = haapi["attributes"].get("unit_of_measurement", "")
