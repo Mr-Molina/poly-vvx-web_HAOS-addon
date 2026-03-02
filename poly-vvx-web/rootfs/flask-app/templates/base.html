@@ -28,15 +28,21 @@
         var stats = [];
         getData(function (data) {
             stats.push(data);
-            var content = '';
+            var tbody = document.createElement('tbody');
+            tbody.id = 'statsTable';
             stats[0].forEach(function(item, index, array) {
                 //console.log(item.friendly_name + " " + item.state_and_unit);
-                content += '<tr>';
-                content += '<td>' + item.friendly_name +'</td>';
-                content += '<td>' + item.state_and_unit +'</td>';
-                content += '</tr>';
+                var tr = document.createElement('tr');
+                var tdName = document.createElement('td');
+                tdName.textContent = item.friendly_name;
+                var tdState = document.createElement('td');
+                tdState.textContent = item.state_and_unit;
+                tr.appendChild(tdName);
+                tr.appendChild(tdState);
+                tbody.appendChild(tr);
             });
-            document.getElementById("statsTable").innerHTML = content;
+            var oldTbody = document.getElementById("statsTable");
+            oldTbody.parentNode.replaceChild(tbody, oldTbody);
         });
     }
 
