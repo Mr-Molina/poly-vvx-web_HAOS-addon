@@ -31,31 +31,43 @@
             stats.push(data);
             var tbody = document.createElement('tbody');
             tbody.id = 'statsTable';
-            stats[0].forEach(function(item, index, array) {
-                //console.log(item.friendly_name + " " + item.state_and_unit);
+            tbody.setAttribute('aria-live', 'polite');
+            if (stats[0].length === 0) {
                 var tr = document.createElement('tr');
-                var tdName = document.createElement('td');
-                tdName.textContent = item.friendly_name;
-                var tdState = document.createElement('td');
-                tdState.textContent = item.state_and_unit;
-                tr.appendChild(tdName);
-                tr.appendChild(tdState);
+                var td = document.createElement('td');
+                td.colSpan = 2;
+                td.textContent = "No sensors found.";
+                tr.appendChild(td);
                 tbody.appendChild(tr);
-            });
+            } else {
+                stats[0].forEach(function(item, index, array) {
+                    //console.log(item.friendly_name + " " + item.state_and_unit);
+                    var tr = document.createElement('tr');
+                    var tdName = document.createElement('td');
+                    tdName.textContent = item.friendly_name;
+                    var tdState = document.createElement('td');
+                    tdState.textContent = item.state_and_unit;
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdState);
+                    tbody.appendChild(tr);
+                });
+            }
             var oldTbody = document.getElementById("statsTable");
             oldTbody.parentNode.replaceChild(tbody, oldTbody);
         });
-        document.getElementById("statsTable").innerHTML = content;
-      });
     }
 
     // Ajax call to get json data from flask api endpoint
     function getData(callback) {
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          var data = JSON.parse(xhr.responseText);
-          callback(data);
+        if (xhr.readyState == 4) {
+          if (xhr.status == 200) {
+            var data = JSON.parse(xhr.responseText);
+            callback(data);
+          } else {
+            callback([{"friendly_name": "Error", "state_and_unit": "Could not load sensors"}]);
+          }
         }
       };
       xhr.open("GET", "/api", true);
