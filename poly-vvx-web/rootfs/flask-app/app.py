@@ -30,7 +30,7 @@ def api():
     newDict = []
     for entity_id in app.config['SENSOR_ENTITY_IDS']:
         # Use session to get connection pooling benefits
-        response = session.get(url + entity_id)
+        response = session.get(url + entity_id, timeout=10)
         try:
             # load json response into dict using built-in requests json parser
             haapi = response.json()
