@@ -13,13 +13,15 @@
     </style>
   </head>
   <body>
-    <table aria-label="Home Assistant Sensors">
-      <tbody id="statsTable" aria-live="polite">
-        <tr>
-          <td colspan="2">Loading sensors...</td>
-        </tr>
-      </tbody>
-    </table>
+    <main>
+      <table aria-label="Home Assistant Sensors" style="width: 100%;">
+        <tbody id="statsTable" aria-live="polite">
+          <tr>
+            <td colspan="2">Loading sensors...</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
   </body>
   <script type="text/javascript">
     statsUpdate();
@@ -47,6 +49,7 @@
                     tdName.textContent = item.friendly_name;
                     var tdState = document.createElement('td');
                     tdState.textContent = item.state_and_unit;
+                    tdState.style.textAlign = 'right';
                     tr.appendChild(tdName);
                     tr.appendChild(tdState);
                     tbody.appendChild(tr);
