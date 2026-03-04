@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify
 import requests
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 try:
@@ -27,8 +28,7 @@ def base():
 
 @app.route("/api")
 def api():
-    newDict = []
-    for entity_id in app.config['SENSOR_ENTITY_IDS']:
+    def fetch_sensor(entity_id):
         # Use session to get connection pooling benefits
         response = session.get(url + entity_id, timeout=10)
         try:
@@ -37,7 +37,19 @@ def api():
             friendly_name = haapi["attributes"]["friendly_name"]
             # use .get to set blank default unit of measurement
             unit_of_measurement = haapi["attributes"].get("unit_of_measurement", "")
-            newDict.append({'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement})
-        except:
+            return {'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement}
+        except Exception as e:
+            # Raise exception to be caught outside
             raise Exception('Could not load json from HA API')
+
+    try:
+        # Use ThreadPoolExecutor to fetch sensor APIs concurrently instead of sequentially
+        # This converts the O(n * latency) waiting time to O(max(latency))
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            # Using map preserves the order of the configuration array
+            results = executor.map(fetch_sensor, app.config['SENSOR_ENTITY_IDS'])
+            newDict = list(results)
+    except Exception as e:
+        raise Exception('Could not load json from HA API')
+
     return jsonify(newDict)
