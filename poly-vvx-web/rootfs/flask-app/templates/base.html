@@ -43,7 +43,9 @@
                 stats[0].forEach(function(item, index, array) {
                     //console.log(item.friendly_name + " " + item.state_and_unit);
                     var tr = document.createElement('tr');
-                    var tdName = document.createElement('td');
+                    var tdName = document.createElement('th');
+                    tdName.setAttribute('scope', 'row');
+                    tdName.style.textAlign = 'left';
                     tdName.textContent = item.friendly_name;
                     var tdState = document.createElement('td');
                     tdState.textContent = item.state_and_unit;
