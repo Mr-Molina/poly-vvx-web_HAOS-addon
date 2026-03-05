@@ -21,6 +21,16 @@ headers = {
 session = requests.Session()
 session.headers.update(headers)
 
+@app.after_request
+def add_security_headers(response):
+    # Prevent browsers from MIME-sniffing a response away from the declared content-type
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # Protect against clickjacking
+    response.headers['X-Frame-Options'] = 'DENY'
+    # Prevent cross-site scripting (XSS) and data injection attacks
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    return response
+
 @app.route("/")
 def base():
     return render_template('base.html')
