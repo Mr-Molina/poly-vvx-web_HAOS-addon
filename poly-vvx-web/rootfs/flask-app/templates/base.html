@@ -22,12 +22,21 @@
     </table>
   </body>
   <script type="text/javascript">
+    var lastDataString = null;
     statsUpdate();
     setInterval(statsUpdate, 30 * 1000);
 
     function statsUpdate() {
         var stats = [];
         getData(function (data) {
+            // ⚡ Bolt: Prevent unnecessary DOM rebuilds and repaints
+            // on low-power VVX browser if the data hasn't changed.
+            var currentDataString = JSON.stringify(data);
+            if (currentDataString === lastDataString) {
+                return;
+            }
+            lastDataString = currentDataString;
+
             stats.push(data);
             var tbody = document.createElement('tbody');
             tbody.id = 'statsTable';
