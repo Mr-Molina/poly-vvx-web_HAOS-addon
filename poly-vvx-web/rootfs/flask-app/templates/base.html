@@ -9,6 +9,7 @@
       html {
         background-color: black;
         color: white;
+        font-family: sans-serif;
       }
     </style>
   </head>
@@ -20,6 +21,7 @@
         </tr>
       </tbody>
     </table>
+    <div id="lastUpdated" style="font-size: 0.8em; color: #ccc; margin-top: 10px;" aria-live="polite"></div>
   </body>
   <script type="text/javascript">
     statsUpdate();
@@ -54,6 +56,10 @@
             }
             var oldTbody = document.getElementById("statsTable");
             oldTbody.parentNode.replaceChild(tbody, oldTbody);
+
+            var now = new Date();
+            var timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById("lastUpdated").textContent = "Last updated: " + timeString;
         });
     }
 
