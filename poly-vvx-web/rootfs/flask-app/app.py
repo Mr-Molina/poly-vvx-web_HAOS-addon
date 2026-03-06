@@ -10,7 +10,7 @@ except:
     print('Could not load options file')
 
 url = "http://supervisor/core/api/states/"
-token = os.getenv('SUPERVISOR_TOKEN')
+token = os.getenv('SUPERVISOR_TOKEN', '')
 
 headers = {
     "Authorization": "Bearer " + token,
