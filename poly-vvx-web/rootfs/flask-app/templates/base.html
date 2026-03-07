@@ -53,6 +53,23 @@
                 });
             }
             var oldTbody = document.getElementById("statsTable");
+
+            // ⚡ Bolt: Prevent unnecessary DOM rebuilds by updating existing rows
+            // if the number of sensors hasn't changed, reducing CPU and GC overhead.
+            var isErrorOrLoading = oldTbody.rows.length > 0 && oldTbody.rows[0].cells[0].colSpan > 1;
+            if (!isErrorOrLoading && oldTbody.rows.length === stats[0].length) {
+                stats[0].forEach(function(item, index) {
+                    var row = oldTbody.rows[index];
+                    if (row.cells[0].textContent !== item.friendly_name) {
+                        row.cells[0].textContent = item.friendly_name;
+                    }
+                    if (row.cells[1].textContent !== item.state_and_unit) {
+                        row.cells[1].textContent = item.state_and_unit;
+                    }
+                });
+                return;
+            }
+
             oldTbody.parentNode.replaceChild(tbody, oldTbody);
         });
     }
