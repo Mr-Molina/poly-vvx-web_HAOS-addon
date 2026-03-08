@@ -10,6 +10,12 @@
         background-color: black;
         color: white;
       }
+      .sensor-name {
+        color: #aaa;
+      }
+      .sensor-state {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -45,8 +51,10 @@
                     var tr = document.createElement('tr');
                     var tdName = document.createElement('td');
                     tdName.textContent = item.friendly_name;
+                    tdName.className = 'sensor-name';
                     var tdState = document.createElement('td');
                     tdState.textContent = item.state_and_unit;
+                    tdState.className = 'sensor-state';
                     tr.appendChild(tdName);
                     tr.appendChild(tdState);
                     tbody.appendChild(tr);
