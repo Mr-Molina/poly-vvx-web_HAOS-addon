@@ -15,14 +15,29 @@
   <body>
     <table aria-label="Home Assistant Sensors">
       <tbody id="statsTable" aria-live="polite">
-        <tr>
-          <td colspan="2">Loading sensors...</td>
-        </tr>
+        {% if initial_data %}
+          {% if initial_data|length == 0 %}
+            <tr><td colspan="2">No sensors found.</td></tr>
+          {% else %}
+            {% for item in initial_data %}
+              <tr>
+                <td>{{ item.friendly_name }}</td>
+                <td>{{ item.state_and_unit }}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        {% else %}
+          <tr><td colspan="2">Loading sensors...</td></tr>
+        {% endif %}
       </tbody>
     </table>
   </body>
   <script type="text/javascript">
-    statsUpdate();
+    // ⚡ Bolt: Use SSR initial data to avoid immediate network fetch and reduce TTI.
+    var hasInitialData = {% if initial_data %}true{% else %}false{% endif %};
+    if (!hasInitialData) {
+        statsUpdate();
+    }
     setInterval(statsUpdate, 30 * 1000);
 
     function statsUpdate() {
