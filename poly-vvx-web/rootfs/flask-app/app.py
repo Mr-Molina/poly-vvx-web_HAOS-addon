@@ -21,14 +21,9 @@ headers = {
 session = requests.Session()
 session.headers.update(headers)
 
-@app.route("/")
-def base():
-    return render_template('base.html')
-
-@app.route("/api")
-def api():
+def get_sensor_data():
     newDict = []
-    for entity_id in app.config['SENSOR_ENTITY_IDS']:
+    for entity_id in app.config.get('SENSOR_ENTITY_IDS', []):
         # Use session to get connection pooling benefits
         response = session.get(url + entity_id, timeout=10)
         try:
@@ -37,7 +32,19 @@ def api():
             friendly_name = haapi["attributes"]["friendly_name"]
             # use .get to set blank default unit of measurement
             unit_of_measurement = haapi["attributes"].get("unit_of_measurement", "")
-            newDict.append({'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement})
+            newDict.append({'friendly_name': friendly_name, 'state_and_unit': str(haapi["state"]) + " " + unit_of_measurement})
         except:
             raise Exception('Could not load json from HA API')
-    return jsonify(newDict)
+    return newDict
+
+@app.route("/")
+def base():
+    try:
+        initial_data = get_sensor_data()
+    except Exception:
+        initial_data = []
+    return render_template('base.html', initial_data=initial_data)
+
+@app.route("/api")
+def api():
+    return jsonify(get_sensor_data())
