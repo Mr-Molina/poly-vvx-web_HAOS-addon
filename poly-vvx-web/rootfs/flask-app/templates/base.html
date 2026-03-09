@@ -16,7 +16,7 @@
     <table aria-label="Home Assistant Sensors">
       <tbody id="statsTable" aria-live="polite">
         <tr>
-          <td colspan="2">Loading sensors...</td>
+          <td colspan="2" style="color: #aaa; text-align: center;">Loading sensors...</td>
         </tr>
       </tbody>
     </table>
@@ -36,7 +36,9 @@
                 var tr = document.createElement('tr');
                 var td = document.createElement('td');
                 td.colSpan = 2;
-                td.textContent = "No sensors found.";
+                td.textContent = "No sensors configured. Check config.yaml.";
+                td.style.color = '#aaa';
+                td.style.textAlign = 'center';
                 tr.appendChild(td);
                 tbody.appendChild(tr);
             } else {
@@ -66,7 +68,7 @@
             var data = JSON.parse(xhr.responseText);
             callback(data);
           } else {
-            callback([{"friendly_name": "Error", "state_and_unit": "Could not load sensors"}]);
+            callback([{"friendly_name": "⚠️ Connection Error", "state_and_unit": "Check Home Assistant API"}]);
           }
         }
       };
