@@ -4,6 +4,9 @@ import json
 import os
 
 app = Flask(__name__)
+# Security Enhancement: Limit max payload size to prevent DoS attacks
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 try:
     app.config.from_file('/data/options.json', json.load)
 except:
