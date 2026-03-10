@@ -10,13 +10,22 @@
         background-color: black;
         color: white;
       }
+      .loading {
+        color: #aaa;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+      }
     </style>
   </head>
   <body>
     <table aria-label="Home Assistant Sensors">
       <tbody id="statsTable" aria-live="polite">
         <tr>
-          <td colspan="2">Loading sensors...</td>
+          <td colspan="2" class="loading">Loading sensors...</td>
         </tr>
       </tbody>
     </table>
