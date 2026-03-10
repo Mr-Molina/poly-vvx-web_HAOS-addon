@@ -5,9 +5,14 @@ import os
 
 app = Flask(__name__)
 try:
-    app.config.from_file('/data/options.json', json.load)
+    with open('/data/options.json', 'r') as f:
+        options = json.load(f)
+        # Security Enhancement: Only load expected configuration keys to prevent
+        # overwriting sensitive Flask config variables (like DEBUG or SECRET_KEY)
+        app.config['SENSOR_ENTITY_IDS'] = options.get('SENSOR_ENTITY_IDS', [])
 except:
     print('Could not load options file')
+    app.config['SENSOR_ENTITY_IDS'] = []
 
 url = "http://supervisor/core/api/states/"
 token = os.getenv('SUPERVISOR_TOKEN')
