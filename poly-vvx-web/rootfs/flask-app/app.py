@@ -1,7 +1,8 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import requests
 import json
 import os
+import hashlib
 
 app = Flask(__name__)
 try:
@@ -40,4 +41,12 @@ def api():
             newDict.append({'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement})
         except:
             raise Exception('Could not load json from HA API')
-    return jsonify(newDict)
+
+    # ⚡ Bolt: Implement ETag to save bandwidth and processing on unchanged data
+    response_data = jsonify(newDict)
+    # Generate MD5 hash of the response content to use as an ETag
+    etag = hashlib.md5(response_data.data).hexdigest()
+    response_data.set_etag(etag)
+
+    # make_conditional automatically handles If-None-Match and returns 304 if data is unchanged
+    return response_data.make_conditional(request)
