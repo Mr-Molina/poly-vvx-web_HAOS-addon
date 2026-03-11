@@ -40,4 +40,11 @@ def api():
             newDict.append({'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement})
         except:
             raise Exception('Could not load json from HA API')
-    return jsonify(newDict)
+
+    response_obj = jsonify(newDict)
+    # Security Enhancement: Prevent caching of sensitive sensor data
+    response_obj.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response_obj.headers['Pragma'] = 'no-cache'
+    response_obj.headers['Expires'] = '0'
+
+    return response_obj

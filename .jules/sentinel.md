@@ -1,0 +1,4 @@
+## 2026-03-08 - [Prevent Caching of Sensitive API Responses]
+**Vulnerability:** The Flask application's `/api` endpoint returns sensitive Home Assistant sensor states without explicitly preventing caching (`Cache-Control: no-store, no-cache, must-revalidate, max-age=0`). Intermediate proxies, routers, and the embedded Poly VVX microbrowser could cache this sensitive data, potentially exposing it to unauthorized users or serving stale state data in critical situations.
+**Learning:** Dynamic API endpoints returning sensitive or frequently changing state information must explicitly instruct clients and proxies not to cache the response. Relying on default browser behavior is insecure.
+**Prevention:** Always add explicit `Cache-Control` HTTP headers (e.g., `no-store, no-cache, must-revalidate, max-age=0`) to API responses that serve sensitive, user-specific, or real-time state data to prevent unintended data exposure or stale content.
