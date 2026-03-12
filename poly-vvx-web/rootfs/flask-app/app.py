@@ -28,7 +28,14 @@ def base():
 @app.route("/api")
 def api():
     newDict = []
-    for entity_id in app.config['SENSOR_ENTITY_IDS']:
+
+    # Security Enhancement: Validate configuration type to prevent unhandled TypeErrors
+    # if a user provides a null or non-list value in options.json
+    sensor_ids = app.config.get('SENSOR_ENTITY_IDS')
+    if not isinstance(sensor_ids, list):
+        return jsonify([{"friendly_name": "Error", "state_and_unit": "Invalid sensor configuration"}]), 500
+
+    for entity_id in sensor_ids:
         # Use session to get connection pooling benefits
         response = session.get(url + entity_id, timeout=10)
         try:

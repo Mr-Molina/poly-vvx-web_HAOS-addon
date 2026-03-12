@@ -1,0 +1,4 @@
+## 2024-03-12 - Prevent Unhandled TypeErrors in Configuration Iteration
+**Vulnerability:** The application iterated over `app.config['SENSOR_ENTITY_IDS']` without verifying its type. If a user provided a `null`, string, or object value in `/data/options.json`, it would result in a `TypeError`, causing an unhandled exception and a 500 Internal Server Error that could leak stack traces or crash the request thread.
+**Learning:** Even trusted configuration sources (like HA Add-on options) can contain unexpected data types. Iterating over unvalidated input is a common vector for DoS or information leakage via stack traces.
+**Prevention:** Always explicitly validate the type of dynamic configuration values (e.g., using `isinstance(val, list)`) before performing operations that expect a specific type, and fail securely if the validation fails.
