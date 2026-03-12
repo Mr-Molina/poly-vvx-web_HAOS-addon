@@ -58,14 +58,21 @@
     }
 
     // Ajax call to get json data from flask api endpoint
+    var lastResponseText = null;
     function getData(callback) {
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
           if (xhr.status == 200) {
+            // ⚡ Bolt: Skip expensive JSON.parse and DOM rebuild if the payload hasn't changed.
+            if (xhr.responseText === lastResponseText) {
+                return;
+            }
+            lastResponseText = xhr.responseText;
             var data = JSON.parse(xhr.responseText);
             callback(data);
           } else {
+            lastResponseText = null;
             callback([{"friendly_name": "Error", "state_and_unit": "Could not load sensors"}]);
           }
         }
