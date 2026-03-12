@@ -10,10 +10,27 @@
         background-color: black;
         color: white;
       }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
     </style>
   </head>
   <body>
     <table aria-label="Home Assistant Sensors">
+      <thead class="sr-only">
+        <tr>
+          <th scope="col">Sensor</th>
+          <th scope="col">State</th>
+        </tr>
+      </thead>
       <tbody id="statsTable" aria-live="polite">
         <tr>
           <td colspan="2">Loading sensors...</td>
