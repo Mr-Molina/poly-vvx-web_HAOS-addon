@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify
 import requests
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 try:
@@ -25,19 +26,28 @@ session.headers.update(headers)
 def base():
     return render_template('base.html')
 
+def fetch_sensor(entity_id):
+    # Use session to get connection pooling benefits
+    response = session.get(url + entity_id, timeout=10)
+    try:
+        # load json response into dict using built-in requests json parser
+        haapi = response.json()
+        friendly_name = haapi["attributes"]["friendly_name"]
+        # use .get to set blank default unit of measurement
+        unit_of_measurement = haapi["attributes"].get("unit_of_measurement", "")
+        return {'friendly_name': friendly_name, 'state_and_unit': str(haapi["state"]) + " " + unit_of_measurement}
+    except Exception as e:
+        raise Exception('Could not load json from HA API')
+
 @app.route("/api")
 def api():
     newDict = []
-    for entity_id in app.config['SENSOR_ENTITY_IDS']:
-        # Use session to get connection pooling benefits
-        response = session.get(url + entity_id, timeout=10)
-        try:
-            # load json response into dict using built-in requests json parser
-            haapi = response.json()
-            friendly_name = haapi["attributes"]["friendly_name"]
-            # use .get to set blank default unit of measurement
-            unit_of_measurement = haapi["attributes"].get("unit_of_measurement", "")
-            newDict.append({'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement})
-        except:
-            raise Exception('Could not load json from HA API')
+    try:
+        # ⚡ Bolt: Fetch sensor states concurrently to reduce overall API latency
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            # map preserves order of results matching input array
+            results = executor.map(fetch_sensor, app.config.get('SENSOR_ENTITY_IDS', []))
+            newDict = list(results)
+    except Exception as e:
+        raise Exception('Could not load json from HA API')
     return jsonify(newDict)
