@@ -10,13 +10,17 @@
         background-color: black;
         color: white;
       }
+      .empty-state {
+        color: #aaa;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
-    <table aria-label="Home Assistant Sensors">
+    <table aria-label="Home Assistant Sensors" style="width: 100%;">
       <tbody id="statsTable" aria-live="polite">
         <tr>
-          <td colspan="2">Loading sensors...</td>
+          <td colspan="2" class="empty-state">Loading sensors...</td>
         </tr>
       </tbody>
     </table>
@@ -36,7 +40,8 @@
                 var tr = document.createElement('tr');
                 var td = document.createElement('td');
                 td.colSpan = 2;
-                td.textContent = "No sensors found.";
+                td.className = 'empty-state';
+                td.textContent = "No sensors configured. Check config.yaml.";
                 tr.appendChild(td);
                 tbody.appendChild(tr);
             } else {
@@ -66,7 +71,7 @@
             var data = JSON.parse(xhr.responseText);
             callback(data);
           } else {
-            callback([{"friendly_name": "Error", "state_and_unit": "Could not load sensors"}]);
+            callback([{"friendly_name": "⚠️ Connection Error", "state_and_unit": "Check Home Assistant API"}]);
           }
         }
       };
