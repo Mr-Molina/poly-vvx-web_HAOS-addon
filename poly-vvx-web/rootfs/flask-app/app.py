@@ -40,4 +40,10 @@ def api():
             newDict.append({'friendly_name': friendly_name, 'state_and_unit': haapi["state"] + " " + unit_of_measurement})
         except:
             raise Exception('Could not load json from HA API')
-    return jsonify(newDict)
+
+    # 🛡️ Sentinel: Prevent sensitive data caching on dynamic API endpoint
+    response = jsonify(newDict)
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
