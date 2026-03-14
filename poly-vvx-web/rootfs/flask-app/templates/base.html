@@ -13,8 +13,8 @@
     </style>
   </head>
   <body>
-    <table aria-label="Home Assistant Sensors">
-      <tbody id="statsTable" aria-live="polite">
+    <table aria-label="Home Assistant Sensors" aria-live="polite">
+      <tbody id="statsTable">
         <tr>
           <td colspan="2">Loading sensors...</td>
         </tr>
@@ -31,7 +31,6 @@
             stats.push(data);
             var tbody = document.createElement('tbody');
             tbody.id = 'statsTable';
-            tbody.setAttribute('aria-live', 'polite');
             if (stats[0].length === 0) {
                 var tr = document.createElement('tr');
                 var td = document.createElement('td');
