@@ -12,6 +12,9 @@ except:
 url = "http://supervisor/core/api/states/"
 token = os.getenv('SUPERVISOR_TOKEN')
 
+if not token:
+    raise RuntimeError("CRITICAL SECURITY ERROR: SUPERVISOR_TOKEN environment variable is missing. Application cannot start securely without authentication.")
+
 headers = {
     "Authorization": "Bearer " + token,
     "content-type": "application/json",
